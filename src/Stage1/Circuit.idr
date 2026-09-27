@@ -1,11 +1,11 @@
-module Logic.Circuit
+module Stage1.Circuit
 
 import Data.List
-import Math.Multiset
-import Math.Singleton.Bit
-import public Logic.BoolePolynumber
-import Math.BoxInt
-import Logic.Bridge
+import Stage0.Multiset
+import Stage0.Singleton.Bit
+import public Stage1.BoolePolynumber
+import Stage0.BoxInt
+import Stage1.Bridge
 
 %default total
 

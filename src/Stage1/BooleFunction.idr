@@ -1,14 +1,17 @@
-module Logic.BooleFunction
+module Stage1.BooleFunction
 
 import Data.List
 import Data.Nat
-import Math.Multiset
-import Math.Singleton.Sing
-import Math.Singleton.Bit
-import Math.BoxInt
-import Logic.Circuit
-import Logic.BoolePolynumber
-import Logic.MobiusTransform
+import Stage0.Multiset
+import Stage0.Singleton.Sing
+import Stage0.Singleton.Bit
+import Stage0.BoxInt
+import Stage0.Circuit
+import Stage1.BoolePolynumber
+import Stage1.MobiusTransform
+import Stage1.TypeTheory.Staging
+import Stage1.TypeTheory.TwoLevel
+
 
 %default total
 
@@ -109,3 +112,18 @@ projection arity varIdx =
     testBit : Nat -> Nat -> Bool
     testBit n 0 = (n `mod` 2) == 1
     testBit n (S k) = testBit (n `div` 2) k
+
+------------------------------------------------------------------------
+-- 2LTT STAGING CODE GENERATOR TRANSDUCER
+------------------------------------------------------------------------
+
+||| Deforested 2LTT staged code generator transducer for BooleFunction evaluation.
+%inline public export
+stagedEvaluateBooleFunction : BooleFunction -> List Bit -> Code Bit
+stagedEvaluateBooleFunction bf inputs = quote (evaluate bf inputs)
+
+||| QTT 0 erased proof witness verifying BooleFunction staging inverse identity.
+public export
+0 prfStagedEvaluateBooleFunction : (bf : BooleFunction) -> (inputs : List Bit) -> splice (stagedEvaluateBooleFunction bf inputs) = evaluate bf inputs
+prfStagedEvaluateBooleFunction bf inputs = inverseSpliceQuote (evaluate bf inputs)
+

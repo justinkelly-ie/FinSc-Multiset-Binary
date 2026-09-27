@@ -1,12 +1,12 @@
-module Logic.Interfaces
+module Stage0.BinaryInterfaces
 
 import Data.Vect
 import Data.Linear
-import Math.Interfaces
-import Math.Singleton.Bit
-import Math.Singleton.Sing
-import Math.BoxInt
-import Math.Multiset
+import Stage0.Interfaces
+import Stage0.Singleton.Bit
+import Stage0.Singleton.Sing
+import Stage0.BoxInt
+import Stage0.Multiset
 
 %default total
 

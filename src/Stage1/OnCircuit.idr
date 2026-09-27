@@ -1,13 +1,13 @@
-module Logic.OnCircuit
+module Stage1.OnCircuit
 
 import Data.List
-import Math.Multiset
-import Math.OnSeq.OnMSet
-import Math.Singleton.Bit
-import Math.Vexel.Byte
-import Math.BoxInt
-import Logic.BoolePolynumber
-import Logic.Circuit
+import Stage0.Multiset
+import Stage0.OnSeq.OnMSet
+import Stage0.Singleton.Bit
+import Stage0.Vexel.Byte
+import Stage0.BoxInt
+import Stage1.BoolePolynumber
+import Stage1.Circuit
 
 %default total
 
@@ -58,19 +58,19 @@ OnByte state = OnSeq (Byte state)
 ||| Pointwise addition of two ongoing byte coordinate sequences.
 public export
 addOnByte : (Eq state) => OnByte state -> OnByte state -> OnByte state
-addOnByte = Math.OnSeq.OnMSet.zipWith addByte
+addOnByte = Stage0.OnSeq.OnMSet.zipWith addByte
 
 ||| Pointwise multiplication of two ongoing byte coordinate sequences.
 public export
 mulOnByte : (Eq state) => OnByte state -> OnByte state -> OnByte state
-mulOnByte = Math.OnSeq.OnMSet.zipWith mulByte
+mulOnByte = Stage0.OnSeq.OnMSet.zipWith mulByte
 
 ||| Pointwise check if components are all zero.
 public export
 isZeroOnByte : OnByte state -> OnSeq Bool
-isZeroOnByte = Math.OnSeq.OnMSet.map isZeroByte
+isZeroOnByte = Stage0.OnSeq.OnMSet.map isZeroByte
 
 ||| Pointwise check if any component is non-zero.
 public export
 isNonZeroOnByte : OnByte state -> OnSeq Bool
-isNonZeroOnByte = Math.OnSeq.OnMSet.map isNonZeroByte
+isNonZeroOnByte = Stage0.OnSeq.OnMSet.map isNonZeroByte

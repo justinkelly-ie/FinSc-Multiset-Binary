@@ -2,26 +2,26 @@ module Main
 
 import QuickCheck
 import Data.List
-import Math.Multiset
-import Math.Singleton.Sing
-import Math.Pixel
-import Math.BoxInt
-import Math.SignedFraction
-import Math.Interfaces
-import Core.VexelMaxel
-import Math.Vexel.DepVexel
-import Math.Singleton.Bit
-import Logic.BoolePolynumber
-import Logic.Circuit
-import Logic.MobiusTransform
-import Math.Singleton.SBFMset
-import Logic.Syllogism
-import Logic.LiftedPolynumber
-import Logic.BooleFunction
-import Math.Vexel.Byte
-import Math.Vexel.Transformation
-import Logic.InformationTheory
-import Logic.FunctionalProbability
+import Stage0.Multiset
+import Stage0.Singleton.Sing
+import Stage0.Pixel
+import Stage0.BoxInt
+import Stage0.SignedFraction
+import Stage0.Interfaces
+import Stage1.VexelMaxel
+import Stage0.Vexel.DepVexel
+import Stage0.Singleton.Bit
+import Stage1.BoolePolynumber
+import Stage1.Circuit
+import Stage1.MobiusTransform
+import Stage0.Singleton.SBFMset
+import Stage1.Syllogism
+import Stage1.LiftedPolynumber
+import Stage1.BooleFunction
+import Stage0.Vexel.Byte
+import Stage0.Vexel.Transformation
+import Stage1.InformationTheory
+import Stage1.FunctionalProbability
 
 %default total
 

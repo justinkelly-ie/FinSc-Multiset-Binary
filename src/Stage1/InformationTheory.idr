@@ -1,13 +1,13 @@
-module Logic.InformationTheory
+module Stage1.InformationTheory
 
 import Data.List
-import Math.Multiset
-import Math.Singleton.Sing
-import Math.Vexel.Vexel
-import Math.BoxInt
-import Math.SignedFraction
-import Math.Interfaces
-import Logic.FunctionalProbability
+import Stage0.Multiset
+import Stage0.Singleton.Sing
+import Stage0.Vexel.Vexel
+import Stage0.BoxInt
+import Stage0.SignedFraction
+import Stage0.Interfaces
+import Stage1.FunctionalProbability
 
 %default total
 

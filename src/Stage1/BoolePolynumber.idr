@@ -1,10 +1,10 @@
-module Logic.BoolePolynumber
+module Stage1.BoolePolynumber
 
 import Data.List
 import Data.Nat
-import Math.Multiset
-import public Math.Singleton.Bit
-import Math.BoxInt
+import Stage0.Multiset
+import public Stage0.Singleton.Bit
+import Stage0.BoxInt
 
 %default covering
 

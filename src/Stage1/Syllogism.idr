@@ -1,9 +1,9 @@
-module Logic.Syllogism
+module Stage1.Syllogism
 
 import Data.Vect
-import Math.Singleton.Bit
-import Math.BoxInt
-import Math.Multiset
+import Stage0.Singleton.Bit
+import Stage0.BoxInt
+import Stage0.Multiset
 
 %default total
 

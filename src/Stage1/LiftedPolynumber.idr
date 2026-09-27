@@ -1,15 +1,16 @@
-module Logic.LiftedPolynumber
+module Stage1.LiftedPolynumber
 
 import Data.List
 import Data.Nat
-import Math.Multiset
-import Math.Singleton.Sing
-import Math.Singleton.SingFraction
-import Math.Vexel.Vexel
-import Math.BoxInt
-import Logic.Bridge
-import Logic.BoolePolynumber
-import Logic.MobiusTransform
+import Stage0.Multiset
+import Stage0.OnSeq.FusedStream
+import Stage0.Singleton.Sing
+import Stage0.Singleton.SingFraction
+import Stage0.Vexel.Vexel
+import Stage0.BoxInt
+import Stage1.Bridge
+import Stage1.BoolePolynumber
+import Stage1.MobiusTransform
 
 %default total
 
@@ -45,7 +46,7 @@ public export
 ||| Forces Boole's idempotent rule x^2 = x.
 ||| Ensures no variable in the monomial has a count greater than 1,
 ||| clamping positive counts and removing zero/negative counts.
-public export
+export %noinline
 idempotentCollapse : Eq v => Monomial v -> Monomial v
 idempotentCollapse mono =
   let entries = multisetToList mono
@@ -58,33 +59,36 @@ idempotentCollapse mono =
 
 ||| Multiply two Monomials, applying the idempotent collapse.
 ||| Example: (xy) * (yz) = xyz (rather than x y^2 z).
-public export
+export %noinline
 mulMonomial : Eq v => Monomial v -> Monomial v -> Monomial v
 mulMonomial m1 m2 = idempotentCollapse (addMultiset m1 m2)
 
 ||| Add two LiftedPolynumbers via multiset addition and compression.
-public export
+export %noinline
 addLiftedPoly : Eq v => LiftedPolynumber v -> LiftedPolynumber v -> LiftedPolynumber v
 addLiftedPoly (MKPolynumber p1) (MKPolynumber p2) =
   MKPolynumber (annihilateMultiset (addMultiset p1 p2))
 
-||| Multiply two LiftedPolynumbers, distributing over terms and multiplying monomials.
+||| Deforested Cartesian product stream generator over two multiset polynumber streams.
 public export
+mulPolynumberStream : Eq v => Multiset BoxInt (Monomial v) -> Multiset BoxInt (Monomial v) -> FusedStream (Monomial v, BoxInt)
+mulPolynumberStream p1 p2 =
+  let strm1 = multisetToStream p1
+      strm2 = multisetToStream p2
+      nested = mapStream (\(mx, cx) =>
+                 mapStream (\(my, cy) => (mulMonomial mx my, cx * cy)) strm2) strm1
+  in fusedConcat nested
+
+||| Deforested outer polynomial product over multiset polynumbers via fused stream deforestation.
+export %noinline
+mulOuterPoly : Eq v => Multiset BoxInt (Monomial v) -> Multiset BoxInt (Monomial v) -> Multiset BoxInt (Monomial v)
+mulOuterPoly p1 p2 = streamToMultiset (mulPolynumberStream p1 p2)
+
+||| Multiply two LiftedPolynumbers via deforested stream transformations.
+export %noinline
 mulLiftedPoly : Eq v => LiftedPolynumber v -> LiftedPolynumber v -> LiftedPolynumber v
 mulLiftedPoly (MKPolynumber p1) (MKPolynumber p2) =
-  MKPolynumber (annihilateMultiset (mulOuter p1 p2))
-  where
-    mulInner : Monomial v -> BoxInt -> Multiset BoxInt (Monomial v) -> Multiset BoxInt (Monomial v)
-    mulInner _ _ ZeroM = ZeroM
-    mulInner mx cx (AddM my cy rest) =
-      let prodMono = mulMonomial mx my
-          prodCoeff = cx * cy
-      in insertItem prodMono prodCoeff (mulInner mx cx rest)
-
-    mulOuter : Multiset BoxInt (Monomial v) -> Multiset BoxInt (Monomial v) -> Multiset BoxInt (Monomial v)
-    mulOuter ZeroM _ = ZeroM
-    mulOuter (AddM mx cx rest) ys =
-      addMultiset (mulInner mx cx ys) (mulOuter rest ys)
+  MKPolynumber (annihilateMultiset (mulOuterPoly p1 p2))
 
 -----------------------------------------------------------------------
 -- DENOMINATOR & FRACTION FOR ROW 2
@@ -96,7 +100,7 @@ theSingUnitConstantZ : Sing TrivialBase
 theSingUnitConstantZ = MkSing BaseAnchor
 
 ||| Helper to lookup coordinate weights in a Vexel BoxInt.
-public export
+export %noinline
 lookupWeightVexel : Eq state => state -> Vexel BoxInt state -> BoxInt
 lookupWeightVexel _ ZeroM = 0
 lookupWeightVexel x (AddM (MkSing y) w rest) =
@@ -124,14 +128,12 @@ public export
 evalLiftedFraction : Eq state => LiftedBooleFraction state -> state -> BoxInt
 evalLiftedFraction (OverLiftedCircuit num _) s = lookupWeightVexel s num
 
-
-
 -----------------------------------------------------------------------
 -- BOOLE-MÖBIUS SHIFT TRANSFORMS
 -----------------------------------------------------------------------
 
 ||| Maps a subset index to a Monomial containing the corresponding variables.
-public export
+export %noinline
 indexToMonomial : Eq v => List v -> Nat -> Monomial v
 indexToMonomial vars idx =
   fromList $ go 0 idx vars
@@ -144,7 +146,7 @@ indexToMonomial vars idx =
       else go (S pos) (half k) xs
 
 ||| Convert a list of polynomial coefficients (from Möbius transform) into a LiftedPolynumber.
-public export
+export %noinline
 coefficientsToPolynumber : Eq v => List v -> List BoxInt -> LiftedPolynumber v
 coefficientsToPolynumber vars coeffs =
   MKPolynumber $ fromList $ go 0 coeffs
@@ -157,7 +159,7 @@ coefficientsToPolynumber vars coeffs =
       else (indexToMonomial vars idx, c) :: go (S idx) cs
 
 ||| Maps a Monomial back to its subset index.
-public export
+export %noinline
 monomialToIndex : Eq v => List v -> Monomial v -> Nat
 monomialToIndex vars mono =
   let terms = map fst (multisetToList mono)
@@ -169,7 +171,7 @@ monomialToIndex vars mono =
       if x == y then 1 else 2 * varBit x ys
 
 ||| Convert a LiftedPolynumber to a list of coefficients of size 2^N.
-public export
+export %noinline
 polynumberToCoefficients : Eq v => List v -> LiftedPolynumber v -> List BoxInt
 polynumberToCoefficients vars (MKPolynumber poly) =
   let size = power 2 (length vars)
@@ -185,12 +187,12 @@ polynumberToCoefficients vars (MKPolynumber poly) =
 
 ||| Computes the LiftedPolynumber from a dense truth table of BoxInt values.
 ||| Uses the inverse Möbius transform (Möbius inversion over ℤ).
-public export
+export %noinline
 truthTableToLiftedPoly : Eq v => List v -> List BoxInt -> LiftedPolynumber v
 truthTableToLiftedPoly vars tt =
   coefficientsToPolynumber vars (mobiusInverseZ tt)
 
-public export
+export %noinline
 liftedPolyToTruthTableM : Eq v => List v -> LiftedPolynumber v -> List BoxInt
 liftedPolyToTruthTableM vars poly =
   let coeffs = polynumberToCoefficients vars poly
@@ -207,7 +209,7 @@ public export
   fromInteger n =
     if n == 0
     then MKPolynumber ZeroM
-    else MKPolynumber (AddM (fromList []) (intToBoxInt (fromInteger n)) ZeroM)
+    else MKPolynumber (AddM ZeroM (intToBoxInt (fromInteger n)) ZeroM)
 
 public export
 (Eq v) => Neg (LiftedPolynumber v) where
@@ -216,4 +218,4 @@ public export
 
 public export
 (Eq v) => Cast v (LiftedPolynumber v) where
-  cast x = MKPolynumber (AddM (fromList [(x, 1)]) 1 ZeroM)
+  cast x = MKPolynumber (AddM (AddM x 1 ZeroM) 1 ZeroM)

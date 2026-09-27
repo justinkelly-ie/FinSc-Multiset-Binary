@@ -1,14 +1,14 @@
-module Logic.FunctionalProbability
+module Stage1.FunctionalProbability
 
 import Data.List
-import Math.Multiset
-import Math.Singleton.Sing
-import Math.Vexel.Vexel
-import Math.BoxInt
-import public Math.SignedFraction
-import Math.Interfaces
-import Logic.Bridge
-import Logic.BoolePolynumber
+import Stage0.Multiset
+import Stage0.Singleton.Sing
+import Stage0.Vexel.Vexel
+import Stage0.BoxInt
+import public Stage0.SignedFraction
+import Stage0.Interfaces
+import Stage0.Bridge
+import Stage1.BoolePolynumber
 
 %default total
 

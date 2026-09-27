@@ -1,12 +1,11 @@
-module Logic.Bridge
+module Stage1.Bridge
 
-import Math.Multiset
-import Math.BoxInt
-import Math.Singleton.Sing
-import Math.Singleton.Bit
-import public Math.IntPolynumber
-import Logic.BoolePolynumber
-import Logic.MobiusTransform
+import Stage0.Multiset
+import Stage0.BoxInt
+import Stage0.Singleton.Sing
+import Stage0.Singleton.Bit
+import public Stage0.IntPolynumber
+import Stage1.BoolePolynumber
 
 %default covering
 

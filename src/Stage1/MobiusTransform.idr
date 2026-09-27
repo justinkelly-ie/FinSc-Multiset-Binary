@@ -1,18 +1,18 @@
-module Logic.MobiusTransform
+module Stage1.MobiusTransform
 
 import Data.List
 import Data.Nat
-import Math.Multiset
-import Math.BoxInt
-import Math.Interfaces
-import Math.Singleton.Sing
-import Math.Singleton.Bit
-import Math.Vexel.Byte
-import Math.OnSeq.OnMSet
-import public Math.SignedFraction
-import Logic.BoolePolynumber
-import Core.Order.Preorder
-import Math.OnSeq.FusedStream
+import Stage0.Multiset
+import Stage0.BoxInt
+import Stage0.Interfaces
+import Stage0.Singleton.Sing
+import Stage0.Singleton.Bit
+import Stage0.Vexel.Byte
+import Stage0.OnSeq.OnMSet
+import public Stage0.SignedFraction
+import Stage1.BoolePolynumber
+import Stage1.Order.Preorder
+import Stage0.OnSeq.FusedStream
 import Data.Fuel
 
 %default covering
@@ -183,7 +183,7 @@ OnTruthTable = OnSeq (Byte Nat)
 ||| Apply the Möbius transform pointwise over an ongoing truth table sequence.
 public export
 mobiusTransformOnSeq : OnTruthTable -> OnTruthTable
-mobiusTransformOnSeq = Math.OnSeq.OnMSet.map mobiusTransformByte
+mobiusTransformOnSeq = Stage0.OnSeq.OnMSet.map mobiusTransformByte
 
 -----------------------------------------------------------------------
 -- 8. COMPILE-TIME DYADIC RANK WITNESSES (2^7 = 128)

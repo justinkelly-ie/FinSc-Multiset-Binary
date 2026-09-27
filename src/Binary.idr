@@ -1,15 +1,16 @@
 module Binary
 
-import public Logic.BooleFunction
-import public Logic.BoolePolynumber
-import public Logic.Bridge
-import public Logic.Circuit
-import public Logic.FunctionalProbability
-import public Logic.InformationTheory
-import public Logic.Interfaces
-import public Logic.LiftedPolynumber
-import public Logic.MobiusTransform
-import public Logic.OnCircuit
-import public Logic.Syllogism
+import public Stage0.BinaryInterfaces
+
+import public Stage1.BooleFunction
+import public Stage1.BoolePolynumber
+import public Stage1.Bridge
+import public Stage1.Circuit
+import public Stage1.OnCircuit
+import public Stage1.FunctionalProbability
+import public Stage1.InformationTheory
+import public Stage1.LiftedPolynumber
+import public Stage1.MobiusTransform
+import public Stage1.Syllogism
 
 %default total
