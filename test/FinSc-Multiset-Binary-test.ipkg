@@ -2,7 +2,7 @@ package FinSc-Multiset-Binary-test
 version = 0.1.1
 authors = "Justin"
 
-depends = base, idris2-QuickCheck, FinSc-Multiset-Core, FinSc-Multiset-Binary
+depends = base, idris2-QuickCheck, FinSc-Multiset, FinSc-Metric-Substrate, FinSc-Multiset-Binary
 
 sourcedir = "test"
 

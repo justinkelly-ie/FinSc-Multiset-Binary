@@ -4,7 +4,6 @@ import QuickCheck
 import Data.List
 import Stage0.Multiset
 import Stage0.Singleton.Sing
-import Stage0.Pixel
 import Stage0.BoxInt
 import Stage0.SignedFraction
 import Stage0.Interfaces
