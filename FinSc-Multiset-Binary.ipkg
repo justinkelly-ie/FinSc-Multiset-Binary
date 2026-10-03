@@ -7,6 +7,8 @@ depends = FinSc-Multiset-Core, FinSc-Multiset-Transform, base, linear
 sourcedir = "src"
 
 modules = Binary,
+          Binary.Stage0,
+          Binary.Stage1,
           Stage0.BinaryInterfaces,
           Stage1.BooleFunction,
           Stage1.BoolePolynumber,
