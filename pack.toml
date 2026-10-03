@@ -1,7 +1,7 @@
 [package]
-name = "FinSc-Multiset-Binary"
+name = "FinSc-Radix-Binary"
 version = "0.3.0"
-ipkg = "FinSc-Multiset-Binary.ipkg"
+ipkg = "FinSc-Radix-Binary.ipkg"
 
 [custom.all.FinSc-Multiset-Core]
 type = "local"

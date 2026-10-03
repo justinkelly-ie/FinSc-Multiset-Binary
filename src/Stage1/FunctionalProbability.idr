@@ -7,7 +7,7 @@ import Stage0.Vexel.Vexel
 import Stage0.BoxInt
 import public Stage0.SignedFraction
 import Stage0.Interfaces
-import Stage0.Bridge
+import Stage1.Bridge
 import Stage1.BoolePolynumber
 
 %default total

@@ -6,7 +6,7 @@ import Stage0.Multiset
 import Stage0.Singleton.Sing
 import Stage0.Singleton.Bit
 import Stage0.BoxInt
-import Stage0.Circuit
+import Stage1.Circuit
 import Stage1.BoolePolynumber
 import Stage1.MobiusTransform
 import Stage1.TypeTheory.Staging
