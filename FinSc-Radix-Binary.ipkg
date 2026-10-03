@@ -19,4 +19,5 @@ modules = Binary,
           Stage1.InformationTheory,
           Stage1.LiftedPolynumber,
           Stage1.MobiusTransform,
+          Stage1.RadixRepIso,
           Stage1.Syllogism
