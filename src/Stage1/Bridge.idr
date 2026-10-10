@@ -7,7 +7,7 @@ import Stage0.Singleton.Bit
 import public Stage0.IntPolynumber
 import Stage1.BoolePolynumber
 
-%default covering
+%default total
 
 -----------------------------------------------------------------------
 -- BOOLE → BOXINT BRIDGE

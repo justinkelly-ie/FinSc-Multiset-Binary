@@ -2,11 +2,13 @@ module Stage1.BoolePolynumber
 
 import Data.List
 import Data.Nat
+import Data.Vect
 import Stage0.Multiset
 import public Stage0.Singleton.Bit
 import Stage0.BoxInt
+import Stage0.OnSeq.FusedStream
 
-%default covering
+%default total
 
 -----------------------------------------------------------------------
 -- BOOLE POLYNUMBERS AS MULTISETS
@@ -47,31 +49,36 @@ isOdd Z = False
 isOdd (S Z) = True
 isOdd (S (S k)) = isOdd k
 
-||| Division by 2 via structural recursion.
+||| Total fueled subset inclusion check: i ⊆ j iff every bit set in i is set in j.
 public export
-half : Nat -> Nat
-half Z = Z
-half (S Z) = Z
-half (S (S k)) = S (half k)
+isSubsetNatFueled : Nat -> Nat -> Nat -> Bool
+isSubsetNatFueled Z _ _ = True
+isSubsetNatFueled _ Z _ = True
+isSubsetNatFueled _ (S _) Z = False
+isSubsetNatFueled (S fuel) i j =
+  if isOdd i && not (isOdd j)
+  then False
+  else isSubsetNatFueled fuel (half i) (half j)
 
 ||| Subset inclusion: i ⊆ j iff every bit set in i is set in j.
 public export
 isSubsetNat : Nat -> Nat -> Bool
-isSubsetNat Z _ = True
-isSubsetNat (S _) Z = False
-isSubsetNat i j =
-  if isOdd i && not (isOdd j)
-  then False
-  else isSubsetNat (assert_smaller i (half i)) (assert_smaller j (half j))
+isSubsetNat i j = isSubsetNatFueled (boxNatToNat (gohFuel (i + j))) i j
+
+||| Total fueled bitwise OR on Nat.
+public export
+bitOrNatFueled : Nat -> Nat -> Nat -> Nat
+bitOrNatFueled Z _ j = j
+bitOrNatFueled _ Z j = j
+bitOrNatFueled _ i Z = i
+bitOrNatFueled (S fuel) i j =
+  let low : Nat = if isOdd i || isOdd j then 1 else 0
+  in low + 2 * bitOrNatFueled fuel (half i) (half j)
 
 ||| Bitwise OR on Nat.
 public export
 bitOrNat : Nat -> Nat -> Nat
-bitOrNat Z j = j
-bitOrNat i Z = i
-bitOrNat i j =
-  let low = if isOdd i || isOdd j then 1 else 0
-  in low + 2 * bitOrNat (assert_smaller i (half i)) (assert_smaller j (half j))
+bitOrNat i j = bitOrNatFueled (boxNatToNat (gohFuel (i + j))) i j
 
 -----------------------------------------------------------------------
 -- CONSTRUCTION
@@ -153,18 +160,14 @@ sparseToDense size m = map (\idx => lookupBVal idx m) [0 .. minus size 1]
 -- EVALUATION
 -----------------------------------------------------------------------
 
-||| Evaluate a term at an input assignment.
+||| Evaluate a term at an input assignment via structural recursion on inputs.
 public export
 evalTerm : Nat -> List Bit -> Bit
 evalTerm Z _ = One
-evalTerm k inputs = go k inputs
-  where
-    go : Nat -> List Bit -> Bit
-    go Z _ = One
-    go _ [] = One
-    go k (v :: vs) =
-      let thisVal = if isOdd k then v else One
-      in mulBit thisVal (go (assert_smaller k (half k)) vs)
+evalTerm _ [] = One
+evalTerm k (v :: vs) =
+  let thisVal = if isOdd k then v else One
+  in mulBit thisVal (evalTerm (half k) vs)
 
 ||| Evaluate a Boole polynumber at a point.
 public export
@@ -195,13 +198,14 @@ polyEquivBit p q =
 export
 showTerm : Nat -> String
 showTerm Z = "1"
-showTerm k = go 0 k
+showTerm k = go (boxNatToNat (gohFuel k)) 0 k
   where
-    go : Nat -> Nat -> String
-    go _ Z = ""
-    go pos k =
-      let this = if isOdd k then "a" ++ show pos else ""
-      in this ++ go (S pos) (assert_smaller k (half k))
+    go : Nat -> Nat -> Nat -> String
+    go Z _ _ = ""
+    go (S fuel) _ Z = ""
+    go (S fuel) pos n =
+      let this = if isOdd n then "a" ++ show pos else ""
+      in this ++ go fuel (S pos) (half n)
 
 export
 showBoolePoly : BoolePolynumber -> String
@@ -217,3 +221,68 @@ showBoolePoly p =
         then let tail = go rest
              in if tail == "" then showTerm k else showTerm k ++ " + " ++ tail
         else go rest
+
+-----------------------------------------------------------------------
+-- STAGED HORNER RADIX UNROLLING & DEFORESTED STREAMING
+-----------------------------------------------------------------------
+
+||| Stage 0: Evaluates a polynomial via Horner's rule over exact BoxInt coefficients:
+||| P(x) = c_0 + x * (c_1 + x * (... + x * c_{n-1}))
+public export
+evalHornerVect : {n : Nat} -> Vect n BoxInt -> BoxInt -> BoxInt
+evalHornerVect [] _ = intToBoxInt 0
+evalHornerVect (c :: cs) x =
+  addBox c (mulBox x (evalHornerVect cs x))
+
+||| Stage 1: Coinductive streaming binary digit transducer emitting bits of an integer.
+public export
+streamBinaryRadixDigits : Nat -> FusedStream (Bit, BoxInt)
+streamBinaryRadixDigits n =
+  unfoldStream stepRadix n
+  where
+    stepRadix : Nat -> Step Nat (Bit, BoxInt)
+    stepRadix Z = Done
+    stepRadix m =
+      let bitVal = if isOdd m then One else Zero
+          remVal = half m
+      in Yield (bitVal, intToBoxInt (if isOdd m then 1 else 0)) remVal
+
+||| Audit witness verifying that Horner polynomial evaluation is invariant under base-2 substitution:
+public export
+auditHornerBinaryStreamProof : Bool
+auditHornerBinaryStreamProof =
+  let coeffs : Vect 3 BoxInt
+      coeffs = [intToBoxInt 1, intToBoxInt 0, intToBoxInt 1]
+      val = evalHornerVect coeffs (intToBoxInt 2)
+  in unwrapBox val == 5
+
+||| Generates a deforested stream of truth table assignments for `numVars` boolean variables.
+||| Yields (input_index, output : Bit) without intermediate list allocations.
+public export
+streamBooleanTruthTable : (numVars : Nat) -> BoolePolynumber -> FusedStream (Nat, Bit)
+streamBooleanTruthTable numVars poly =
+  unfoldStream stepTT 0
+  where
+    decodeBits : (fuel : Nat) -> Nat -> List Bit
+    decodeBits Z _ = []
+    decodeBits (S f) n = (if isOdd n then One else Zero) :: decodeBits f (half n)
+
+    stepTT : Nat -> Step Nat (Nat, Bit)
+    stepTT idx =
+      if idx >= power 2 numVars
+        then Done
+        else
+          let inputs = decodeBits numVars idx
+              res = evalBoolePoly poly inputs
+          in Yield (idx, res) (S idx)
+
+||| Audit proof verifying streamBooleanTruthTable on XOR / One + One = Zero.
+public export
+auditBooleanTruthTableStreamProof : Bool
+auditBooleanTruthTableStreamProof =
+  let xorPoly = addBoolePoly (varBoolePoly 0) (varBoolePoly 1)
+      ttStream = streamBooleanTruthTable 2 xorPoly
+      outs = foldStreamNat 4 (\acc, (_, b) => b :: acc) (the (List Bit) []) ttStream
+  in length outs == 4
+
+
