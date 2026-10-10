@@ -256,6 +256,19 @@ auditHornerBinaryStreamProof =
       val = evalHornerVect coeffs (intToBoxInt 2)
   in unwrapBox val == 5
 
+||| Evaluates a single term at integer bit-index idx:
+||| Term k evaluates to One iff all bits present in k are present in idx (k ⊆ idx).
+public export
+evalTermNat : Nat -> Nat -> Bit
+evalTermNat k idx = if isSubsetNat k idx then One else Zero
+
+||| Evaluates a Boole polynumber directly at integer bit-index idx without intermediate List allocation.
+public export
+evalBoolePolyAtIdx : BoolePolynumber -> Nat -> Bit
+evalBoolePolyAtIdx ZeroM _ = Zero
+evalBoolePolyAtIdx (AddM k c rest) idx =
+  addBit (mulBit c (evalTermNat k idx)) (evalBoolePolyAtIdx rest idx)
+
 ||| Generates a deforested stream of truth table assignments for `numVars` boolean variables.
 ||| Yields (input_index, output : Bit) without intermediate list allocations.
 public export
@@ -263,17 +276,12 @@ streamBooleanTruthTable : (numVars : Nat) -> BoolePolynumber -> FusedStream (Nat
 streamBooleanTruthTable numVars poly =
   unfoldStream stepTT 0
   where
-    decodeBits : (fuel : Nat) -> Nat -> List Bit
-    decodeBits Z _ = []
-    decodeBits (S f) n = (if isOdd n then One else Zero) :: decodeBits f (half n)
-
     stepTT : Nat -> Step Nat (Nat, Bit)
     stepTT idx =
       if idx >= power 2 numVars
         then Done
         else
-          let inputs = decodeBits numVars idx
-              res = evalBoolePoly poly inputs
+          let res = evalBoolePolyAtIdx poly idx
           in Yield (idx, res) (S idx)
 
 ||| Audit proof verifying streamBooleanTruthTable on XOR / One + One = Zero.

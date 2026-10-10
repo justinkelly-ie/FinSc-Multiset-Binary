@@ -7,6 +7,7 @@ import Stage0.Vexel.Vexel
 import Stage0.BoxInt
 import Stage0.SignedFraction
 import Stage0.Interfaces
+import Stage0.StructuralFuel
 import Stage1.FunctionalProbability
 
 %default total
@@ -24,8 +25,8 @@ log2Ceil (S (S Z)) = 1
 log2Ceil (S (S (S Z))) = 2
 log2Ceil (S (S (S (S Z)))) = 2
 log2Ceil n =
-  let half = cast {to=Nat} (div (cast {to=Integer} (S n)) 2)
-  in S (assert_total (log2Ceil half))
+  let halfN = half (S n)
+  in S (assert_total (log2Ceil halfN))
 
 ||| Log2 helper for BoxInt.
 public export
