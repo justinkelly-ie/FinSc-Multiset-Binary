@@ -50,6 +50,22 @@ lcomultVect (x :: xs) =
 -- STREAMING HORNER RADIX EXPANSION
 -----------------------------------------------------------------------
 
+||| Evaluates a stream of Bits into an integer value via fused Horner expansion (radix = 2) with model-indexed GohFuel.
+public export
+streamHornerBinaryFuelModel : GohFuel cap -> FusedStream Bit -> BoxInt
+streamHornerBinaryFuelModel fuel strm =
+  foldStreamFuelModel fuel
+    (\acc, b =>
+      let bInt = intToBoxInt (bitToInteger b)
+      in addBox (mulBox acc (intToBoxInt 2)) bInt)
+    (intToBoxInt 0)
+    strm
+
+||| Evaluates a stream of Bits into an integer value via fused Horner expansion using canonical Goh fuel derived from capacity.
+public export
+streamHornerBinaryGoh : (capacity : Nat) -> FusedStream Bit -> BoxInt
+streamHornerBinaryGoh cap = streamHornerBinaryFuelModel (gohFuelForCapacity cap)
+
 ||| Evaluates a stream of Bits into an integer value via fused Horner expansion (radix = 2).
 public export
 streamHornerBinary : Fuel -> FusedStream Bit -> BoxInt
@@ -67,8 +83,8 @@ auditStreamHornerBinaryProof : Bool
 auditStreamHornerBinaryProof =
   let sevenBits = stream [One, One, One, One, One, One, One]
       eightBits = stream [One, Zero, Zero, Zero, Zero, Zero, Zero, Zero]
-      v7 = streamHornerBinary (limit 7) sevenBits
-      v8 = streamHornerBinary (limit 8) eightBits
+      v7 = streamHornerBinaryFuelModel (gohFuelForCapacity 7) sevenBits
+      v8 = streamHornerBinaryFuelModel (gohFuelForCapacity 8) eightBits
   in unwrapBox v7 == 127 && unwrapBox v8 == 128
 
 ------------------------------------------------------------------------
