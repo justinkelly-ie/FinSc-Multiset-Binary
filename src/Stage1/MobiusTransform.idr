@@ -14,6 +14,7 @@ import public Stage0.SignedFraction
 import Stage1.BoolePolynumber
 import Stage1.Order.Preorder
 import Stage0.OnSeq.FusedStream
+import Stage1.TypeTheory.Smoothness
 import Data.Fuel
 
 %default total
@@ -289,13 +290,19 @@ fastFusedDyadicTensorStream : Fuel -> List Bit -> List Bit
 fastFusedDyadicTensorStream f bits =
   map bitVal (runFueledStream f (fastDyadicMobiusStream bits))
 
+||| Zero-allocation deforested dyadic tensor stream transducer using fastDyadicMobiusStream and model-indexed GohFuel.
+public export
+fastFusedDyadicTensorStreamFuelModel : GohFuel cap -> List Bit -> List Bit
+fastFusedDyadicTensorStreamFuelModel fuel bits =
+  map bitVal (runFueledStreamFuelModel fuel (fastDyadicMobiusStream bits))
+
 ||| Compile-time audit verifying that deforested stream Möbius transform satisfies self-inversion T^2 = I.
 public export
 auditDeforestedMobiusProof : Bool
 auditDeforestedMobiusProof =
   let testBits = [One, Zero, One, One]
-      strm1 = runFueledStream (limit 4) (streamMobiusBits testBits)
-      strm2 = runFueledStream (limit 4) (streamMobiusBits strm1)
+      strm1 = runFueledStreamFuelModel (gohFuelForCapacity 4) (streamMobiusBits testBits)
+      strm2 = runFueledStreamFuelModel (gohFuelForCapacity 4) (streamMobiusBits strm1)
   in strm2 == testBits
 
 ||| O(1) allocation deforested stream transducer folding Möbius transform across Dyadic streams.
@@ -303,6 +310,12 @@ public export
 fusedDyadicTensorStream : Fuel -> List Bit -> List Bit
 fusedDyadicTensorStream f bits =
   map bitVal (runFueledStream f (dyadicStream (mobiusTransform bits)))
+
+||| O(1) allocation deforested stream transducer folding Möbius transform across Dyadic streams using model-indexed GohFuel.
+public export
+fusedDyadicTensorStreamFuelModel : GohFuel cap -> List Bit -> List Bit
+fusedDyadicTensorStreamFuelModel fuel bits =
+  map bitVal (runFueledStreamFuelModel fuel (dyadicStream (mobiusTransform bits)))
 
 ||| Zero-allocation deforested stream transducer for the integer Boole-Möbius transform.
 public export

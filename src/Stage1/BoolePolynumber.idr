@@ -7,6 +7,7 @@ import Stage0.Multiset
 import public Stage0.Singleton.Bit
 import Stage0.BoxInt
 import Stage0.OnSeq.FusedStream
+import Stage1.TypeTheory.Smoothness
 
 %default total
 
@@ -63,7 +64,7 @@ isSubsetNatFueled (S fuel) i j =
 ||| Subset inclusion: i ⊆ j iff every bit set in i is set in j.
 public export
 isSubsetNat : Nat -> Nat -> Bool
-isSubsetNat i j = isSubsetNatFueled (boxNatToNat (gohFuel (i + j))) i j
+isSubsetNat i j = isSubsetNatFueled (gohSteps (gohFuelForCapacity (i + j))) i j
 
 ||| Total fueled bitwise OR on Nat.
 public export
@@ -78,7 +79,7 @@ bitOrNatFueled (S fuel) i j =
 ||| Bitwise OR on Nat.
 public export
 bitOrNat : Nat -> Nat -> Nat
-bitOrNat i j = bitOrNatFueled (boxNatToNat (gohFuel (i + j))) i j
+bitOrNat i j = bitOrNatFueled (gohSteps (gohFuelForCapacity (i + j))) i j
 
 -----------------------------------------------------------------------
 -- CONSTRUCTION
@@ -198,7 +199,7 @@ polyEquivBit p q =
 export
 showTerm : Nat -> String
 showTerm Z = "1"
-showTerm k = go (boxNatToNat (gohFuel k)) 0 k
+showTerm k = go (gohSteps (gohFuelForCapacity k)) 0 k
   where
     go : Nat -> Nat -> Nat -> String
     go Z _ _ = ""
