@@ -10,8 +10,6 @@ import Stage1.Circuit
 import Stage1.BoolePolynumber
 import Stage1.MobiusTransform
 import Stage1.TypeTheory.Staging
-import Stage1.TypeTheory.TwoLevel
-
 
 %default total
 
