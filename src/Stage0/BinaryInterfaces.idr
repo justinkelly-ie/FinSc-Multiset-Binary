@@ -86,7 +86,7 @@ auditStreamHornerBinaryProof =
       eightBits = stream [One, Zero, Zero, Zero, Zero, Zero, Zero, Zero]
       v7 = streamHornerBinaryFuelModel (gohFuelForCapacity 7) sevenBits
       v8 = streamHornerBinaryFuelModel (gohFuelForCapacity 8) eightBits
-  in unwrapBox v7 == 127 && unwrapBox v8 == 128
+  in v7 == intToBoxInt 127 && v8 == intToBoxInt 128
 
 ------------------------------------------------------------------------
 -- HYPERBOLIC 128 CANONICAL BINARY EMBEDDING (RULE 03)
@@ -151,7 +151,7 @@ auditBinaryDepScaleTransformProof =
       rtMax = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} valMax
       rtMin = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} valMin
       rtMid = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} valMid
-  in unwrapBox valMax == 127 && unwrapBox valMin == 0 && unwrapBox valMid == 85
+  in valMax == intToBoxInt 127 && valMin == intToBoxInt 0 && valMid == intToBoxInt 85
      && rtMax == bMax && rtMin == bMin && rtMid == bMid
 
 public export

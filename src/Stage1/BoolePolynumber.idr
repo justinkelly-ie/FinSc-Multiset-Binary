@@ -255,7 +255,7 @@ auditHornerBinaryStreamProof =
   let coeffs : Vect 3 BoxInt
       coeffs = [intToBoxInt 1, intToBoxInt 0, intToBoxInt 1]
       val = evalHornerVect coeffs (intToBoxInt 2)
-  in unwrapBox val == 5
+  in val == intToBoxInt 5
 
 ||| Evaluates a single term at integer bit-index idx:
 ||| Term k evaluates to One iff all bits present in k are present in idx (k ⊆ idx).

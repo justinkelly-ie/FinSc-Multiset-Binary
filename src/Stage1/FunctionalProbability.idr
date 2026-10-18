@@ -39,8 +39,7 @@ normalize m =
 public export
 stateProbability : Eq v => MSetFractionVexel v -> v -> MSetFraction
 stateProbability (OverMSFSpace m den) s =
-  let denVal = unwrapBox den
-      absDen = integerToNat (abs denVal)
+  let absDen = boxToNat (absBox den)
   in if absDen == 0
      then zeroMSF
      else
@@ -56,8 +55,7 @@ stateProbability (OverMSFSpace m den) s =
 public export
 normalizeFraction : MSetFractionVexel v -> List (v, MSetFraction)
 normalizeFraction (OverMSFSpace m den) =
-  let denVal = unwrapBox den
-      absDen = integerToNat (abs denVal)
+  let absDen = boxToNat (absBox den)
   in if absDen == 0
      then []
      else map (\(k, v) => (k, MkMSF v absDen)) (multisetToList m)
@@ -67,8 +65,7 @@ public export
 expectation : Eq v => (v -> BoxInt) -> MSetFractionVexel v -> MSetFraction
 expectation f (OverMSFSpace m den) =
   let weightedSum = foldl (\acc, (x, w) => acc + (f x * w)) 0 (multisetToList m)
-      denVal = unwrapBox den
-      absDen = integerToNat (abs denVal)
+      absDen = boxToNat (absBox den)
   in if absDen == 0
      then zeroMSF
      else MkMSF weightedSum absDen

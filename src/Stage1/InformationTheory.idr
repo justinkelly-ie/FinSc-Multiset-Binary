@@ -41,15 +41,12 @@ selfInformationBoxInt (MkMSF num denom) =
   let dBox = intToBoxInt (cast denom)
       iDenom = boxLog2 dBox
       iNum = boxLog2 (absBox num)
-      n = unwrapBox num
-  in if n == 0 then 0 else iDenom - iNum
+  in if boxIsZero num then 0 else iDenom - iNum
 
 ||| Self-Information (Surprisal) in bits for an exact rational probability fraction w/d
 public export
 selfInformationBits : MSetFraction -> Nat
-selfInformationBits sf =
-  let val = unwrapBox (selfInformationBoxInt sf)
-  in cast val
+selfInformationBits sf = boxToNat (selfInformationBoxInt sf)
 
 ||| Cross-Entropy H(P, Q) in bits for discrete multiset distributions.
 ||| H(P, Q) = sum_x P(x) * log2(1 / Q(x))
