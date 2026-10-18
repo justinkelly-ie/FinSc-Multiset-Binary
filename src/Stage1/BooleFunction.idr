@@ -6,6 +6,7 @@ import Stage0.Multiset
 import Stage0.Singleton.Sing
 import Stage0.Singleton.Bit
 import Stage0.BoxInt
+import Stage0.BoxNat
 import Stage1.Circuit
 import Stage1.BoolePolynumber
 import Stage1.MobiusTransform
@@ -108,8 +109,11 @@ projection arity varIdx =
   in MkBooleFunction arity table
   where
     testBit : Nat -> Nat -> Bool
-    testBit n 0 = (n `mod` 2) == 1
-    testBit n (S k) = testBit (n `div` 2) k
+    testBit n k =
+      let (half, isOdd) = natHalfAndOdd n
+      in case k of
+           0 => isOdd
+           S prev => testBit half prev
 
 ------------------------------------------------------------------------
 -- 2LTT STAGING CODE GENERATOR TRANSDUCER

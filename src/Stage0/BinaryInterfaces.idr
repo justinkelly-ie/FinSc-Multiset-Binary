@@ -6,6 +6,7 @@ import Stage0.Interfaces
 import Stage0.Singleton.Bit
 import Stage0.Singleton.Sing
 import Stage0.BoxInt
+import Stage0.BoxNat
 import Stage0.Multiset
 import Stage0.OnSeq.FusedStream
 import Stage1.ScaleTransform
@@ -105,27 +106,26 @@ vect7BitsToBoxInt [b6, b5, b4, b3, b2, b1, b0] =
       v0 = intToBoxInt (bitToInteger b0)
   in addBox v6 (addBox v5 (addBox v4 (addBox v3 (addBox v2 (addBox v1 v0)))))
 
-||| Helper to extract bits from integer scalar:
+||| Helper to extract bits from natural scalar:
 public export
-intToBitRem : Integer -> (Bit, Integer)
-intToBitRem n =
-  let rem = n `mod` 2
-      quot = n `div` 2
-      b = if rem == 0 then Zero else One
+natToBitRem : Nat -> (Bit, Nat)
+natToBitRem n =
+  let (quot, isOdd) = natHalfAndOdd n
+      b = if isOdd then One else Zero
   in (b, quot)
 
 ||| Decodes an integer scalar in [0, 127] into a 7-bit register:
 public export
 boxIntToVect7Bits : BoxInt -> Vect 7 Bit
 boxIntToVect7Bits b =
-  let n = unwrapBox b
-      (b0, q0) = intToBitRem n
-      (b1, q1) = intToBitRem q0
-      (b2, q2) = intToBitRem q1
-      (b3, q3) = intToBitRem q2
-      (b4, q4) = intToBitRem q3
-      (b5, q5) = intToBitRem q4
-      (b6, _)  = intToBitRem q5
+  let n = boxToNat b
+      (b0, q0) = natToBitRem n
+      (b1, q1) = natToBitRem q0
+      (b2, q2) = natToBitRem q1
+      (b3, q3) = natToBitRem q2
+      (b4, q4) = natToBitRem q3
+      (b5, q5) = natToBitRem q4
+      (b6, _)  = natToBitRem q5
   in [b6, b5, b4, b3, b2, b1, b0]
 
 ||| Canonical Hyperbolic 128 ROM Binary Embedding:
