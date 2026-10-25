@@ -7,7 +7,6 @@ import Stage0.Singleton.Sing
 import Stage0.BoxInt
 import Stage0.SignedFraction
 import Stage0.Interfaces
-import Stage1.VexelMaxel
 import Stage0.Vexel.DepVexel
 import Stage0.Singleton.Bit
 import Stage1.BoolePolynumber
