@@ -317,11 +317,25 @@ fusedDyadicTensorStreamFuelModel : GohFuel cap -> List Bit -> List Bit
 fusedDyadicTensorStreamFuelModel fuel bits =
   map bitVal (runFueledStreamFuelModel fuel (dyadicStream (mobiusTransform bits)))
 
+||| Zero-allocation deforested stream generator for the integer Boole-Möbius transform.
+public export
+mobiusTransformZStream : List BoxInt -> FusedStream BoxInt
+mobiusTransformZStream xs =
+  unfoldStream (\(i, sz) =>
+    if i >= sz then Done
+    else Yield (foldRowZ i 0 xs) (S i, sz)) (0, length xs)
+  where
+    foldRowZ : Nat -> Nat -> List BoxInt -> BoxInt
+    foldRowZ _ _ [] = 0
+    foldRowZ i j (x :: rest) =
+      let contrib = if isSubsetNat i j then x else 0
+      in contrib + foldRowZ i (S j) rest
+
 ||| Zero-allocation deforested stream transducer for the integer Boole-Möbius transform.
 public export
 fusedMobiusTransformZ : Fuel -> FusedStream BoxInt -> FusedStream BoxInt
 fusedMobiusTransformZ f strm =
-  stream (mobiusTransformZ (runFueledStream f strm))
+  mobiusTransformZStream (runFueledStream f strm)
 
 ||| Strongly-typed vector Boole-Möbius transform preserving constant space.
 public export
