@@ -128,29 +128,29 @@ boxIntToVect7Bits b =
       (b6, _)  = natToBitRem q5
   in [b6, b5, b4, b3, b2, b1, b0]
 
-||| Canonical Hyperbolic 128 ROM Binary Embedding:
+||| Canonical Hyperbolic ROM Binary Embedding:
 ||| Maps 7-bit registers (2^7 = 128) directly into the Hyperbolic ROM capacity.
 public export
-DepScaleTransform Stage1.TypeTheory.Smoothness.dimHyperbolic128 Stage1.TypeTheory.Smoothness.dimHyperbolic128 (Vect 7 Bit) BoxInt where
+DepScaleTransform Stage1.TypeTheory.Smoothness.dimHyperbolic Stage1.TypeTheory.Smoothness.dimHyperbolic (Vect 7 Bit) BoxInt where
   depScaleTransform = vect7BitsToBoxInt
 
 public export
-InvertibleDepScaleTransform Stage1.TypeTheory.Smoothness.dimHyperbolic128 Stage1.TypeTheory.Smoothness.dimHyperbolic128 (Vect 7 Bit) BoxInt where
+InvertibleDepScaleTransform Stage1.TypeTheory.Smoothness.dimHyperbolic Stage1.TypeTheory.Smoothness.dimHyperbolic (Vect 7 Bit) BoxInt where
   invertDepScaleTransform = boxIntToVect7Bits
 
-||| Audits the roundtrip bijection for 7-bit registers and Hyperbolic 128 capacity:
+||| Audits the roundtrip bijection for 7-bit registers and Hyperbolic capacity:
 public export
 auditBinaryDepScaleTransformProof : Bool
 auditBinaryDepScaleTransformProof =
   let bMax : Vect 7 Bit = [One, One, One, One, One, One, One]
       bMin : Vect 7 Bit = [Zero, Zero, Zero, Zero, Zero, Zero, Zero]
       bMid : Vect 7 Bit = [One, Zero, One, Zero, One, Zero, One]
-      valMax = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} bMax
-      valMin = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} bMin
-      valMid = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} bMid
-      rtMax = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} valMax
-      rtMin = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} valMin
-      rtMid = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic128} valMid
+      valMax = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic} bMax
+      valMin = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic} bMin
+      valMid = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic} bMid
+      rtMax = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic} valMax
+      rtMin = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic} valMin
+      rtMid = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimHyperbolic} {targetDim = Stage1.TypeTheory.Smoothness.dimHyperbolic} valMid
   in valMax == intToBoxInt 127 && valMin == intToBoxInt 0 && valMid == intToBoxInt 85
      && rtMax == bMax && rtMin == bMin && rtMid == bMid
 
