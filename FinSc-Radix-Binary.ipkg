@@ -6,10 +6,7 @@ brief   = "Layer 2a Constructivist B2 Field & Algebra of Boole Engine."
 depends = FinSc-Multiset, FinSc-Metric-Substrate, base, linear
 sourcedir = "src"
 
-modules = Binary,
-          Binary.Stage0,
-          Binary.Stage1,
-          Stage0.BinaryInterfaces,
+modules = Stage0.BinaryInterfaces,
           Stage1.BooleFunction,
           Stage1.BoolePolynumber,
           Stage1.Bridge,
